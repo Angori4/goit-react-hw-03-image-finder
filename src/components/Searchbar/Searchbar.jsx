@@ -24,9 +24,10 @@ export class Searchbar extends Component {
       toast.error('Please enter your search query :)');
       return;
     }
-    this.props.onSearch(this.state.imgName);
+    this.props.onSearch(this.state.imgName, 1); 
     this.setState({ imgName: '' });
   };
+
 
   render() {
     return (
