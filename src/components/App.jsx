@@ -1,52 +1,70 @@
-import React, { Component } from 'react';
-
-import { Toaster } from 'react-hot-toast';
-import { GlobalStyle } from './GlobalStyle';
-
-import { Searchbar } from './Searchbar/Searchbar';
-import { Layout } from './Layout';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Modal } from './Modal/Modal';
+import { Component } from 'react';
+import React from 'react';
+import { Serchbar } from './Searchbar/Searchbar';
+import { fetchData } from 'service/api';
+import { GaleryImg } from './ImageGallery/ImageGallery';
+import { Btn } from './Button/Button';
+import { Loader } from './Loader/Loader';
+import { BasaStyled } from './add.styled';
 
 export class App extends Component {
   state = {
-    textSearch: '',
-    modalImg: '',
-    showModal: false,
-    images: [],
+    card: [],
     page: 1,
-   
+    inputValue: null,
+    isLoad: false,
+    onShow: false,
   };
 
-  handelSubmit = textSearch => {
-    this.setState({ textSearch, page: 1, images: []});
+  componentDidUpdate(prevStat, prevProp) {
+    if (
+      prevProp.page !== this.state.page ||
+      prevProp.inputValue !== this.state.inputValue
+    ) {
+      this.setState({ isLoad: true });
+      fetchData(this.state.inputValue, this.state.page)
+        .then(cards =>
+          this.setState(preve => ({
+            card: [...preve.card, ...cards],
+            onShow: cards.length === 12,
+            isLoad: false
+          }))
+        )
+        .catch(error => console.log(error))
+       
+    }
+    console.log(this.state.isLoad);
+  }
+
+  FindPicteru = e => {
+    if (e.serch === '') {
+      alert('Enter a search name');
+    } else {
+      this.setState({ page: 1 });
+      this.setState({ isLoad: true });
+      this.setState({ card: [] });
+      this.setState(prev => ({ inputValue: e.serch }));
+
+      // fetchData(e.serch, 1)
+      //   .then(cards => this.setState({ card: [...cards], isLoad: false }))
+      //   .catch(error => console.log(error));
+    }
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
-  };
-  getLargeImg = url => {
-    this.toggleModal();
-    this.setState({ modalImg: url });
+  addPages = () => {
+    this.setState(prevStat => ({ page: prevStat.page + 1 }));
   };
 
   render() {
     return (
-      <Layout>
-        <Toaster duration={1500} position="top-right" reverseOrder={false} />
-        <GlobalStyle />
-        <Searchbar onSearch={this.handelSubmit} />
-        <ImageGallery
-          values={this.state.textSearch}
-          onClick={this.getLargeImg}
-        />
-        {this.state.showModal && (
-          <Modal
-            largeImageURL={this.state.modalImg}
-            onClose={this.toggleModal}
-          />
+      <BasaStyled>
+        <Serchbar onSubmit={this.FindPicteru} />
+        <GaleryImg img={this.state.card} />
+        {this.state.isLoad !== false && <Loader />}
+        {this.state.onShow === true && this.state.isLoad === false && (
+          <Btn addPages={this.addPages} />
         )}
-      </Layout>
+      </BasaStyled>
     );
   }
 }

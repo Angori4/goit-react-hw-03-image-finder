@@ -1,26 +1,36 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { GalleryItem, GalleryImg } from './ImageGalleryItem.styled';
+import { Modal } from 'components/Modal/Modal';
+import './itemGalery.css'
 
-export const ImageGalleryItem = ({
-  image: { webformatURL, id, tags, largeImageURL },
-  onClick,
-}) => {
+export class ImaageaItems extends Component{
+  state ={
+    openModal: false,
+    src: ''
+  }
+
+  openModal =(e)=>  {
+    this.setState({ openModal: true, src: e.target.src });
+  }
+  
+  closeModal =()=>  {
+    this.setState({ openModal: false });
+  }
+
+  render(){
+  const {largeImageURL,tags} =this.props 
   return (
-    <GalleryItem key={id}>
-      <GalleryImg
-        src={webformatURL}
-        alt={tags}
-        onClick={() => onClick(largeImageURL)}
-      />
-    </GalleryItem>
-  );
-};
+    <>
+          <li className='ImageGalleryItem'  >
+            <img className='ImageGalleryItem-image ' src={largeImageURL} alt={tags} width="400px" onClick={this.openModal}/>
+          </li>
+      {this.state.openModal === true && <Modal closeModal={this.closeModal} src={this.state.src}/>}
+    </>
+  )
+    }
+}
 
-ImageGalleryItem.propTypes = {
-  webformatURL: PropTypes.string,
-  largeImageURL: PropTypes.string,
-  tags: PropTypes.array,
-  id: PropTypes.number,
-  onClick: PropTypes.func,
+ImaageaItems.propTypes = {
+  tags: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
 };

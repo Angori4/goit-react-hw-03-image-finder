@@ -1,53 +1,30 @@
-import React, { Component } from 'react';
-import { FcSearch } from 'react-icons/fc';
-import toast from 'react-hot-toast';
-import {
-  SearchBar,
-  SearchForm,
-  SearchFormButton,
-  SearchFormButtonLabel,
-  SearchFormInput,
-} from './Searchbar.styled';
+import React from "react"
+import { Form,Formik, Field } from "formik"
+import './search.styled.css'
+export const Serchbar = ({onSubmit}) =>{
 
-export class Searchbar extends Component {
-  static propTypes = {};
-  state = {
-    imgName: '',
-  };
+const handeleSubmit = (values, actions) => {
+  onSubmit(values)
+  actions.resetForm()
+}
 
-  imgNameChange = event => {
-    this.setState({ imgName: event.target.value.toLowerCase() });
-  };
-  handelSubmit = event => {
-    event.preventDefault();
-    if (this.state.imgName.trim() === '') {
-      toast.error('Please enter your search query :)');
-      return;
-    }
-    this.props.onSearch(this.state.imgName, 1); 
-    this.setState({ imgName: '' });
-  };
+return (
+<Formik initialValues={{serch: ''}} onSubmit={handeleSubmit}>
 
-
-  render() {
-    return (
-      <SearchBar>
-        <SearchForm onSubmit={this.handelSubmit}>
-          <SearchFormButton type="submit">
-            <FcSearch />
-            <SearchFormButtonLabel></SearchFormButtonLabel>
-          </SearchFormButton>
-
-          <SearchFormInput
-            type="text"
-            name="imgName"
-            autocomplete="off"
-            value={this.state.imgName}
-            onChange={this.imgNameChange}
-            placeholder="Search images and photos"
-          />
-        </SearchForm>
-      </SearchBar>
-    );
-  }
+  <Form className="find">
+    <button type="submit" className="button SearchForm-button">
+      <span>&#128270;</span>
+    </button>
+<label>
+    <Field
+    className="SearchForm-input"
+      name= 'serch'
+      type="text"
+      autoFocus
+      placeholder="Search images and photos"
+    />
+    </label>
+  </Form>
+</Formik>
+)
 }

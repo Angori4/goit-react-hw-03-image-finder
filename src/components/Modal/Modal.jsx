@@ -1,39 +1,36 @@
-import React from 'react';
 import { Component } from 'react';
-import { createPortal } from 'react-dom';
-import { Overlay, Modalka } from './Modal.styled';
-
-const modalRoot = document.querySelector('#modal-root');
+import PropTypes from 'prop-types';
+import { Modals,Overlay } from './modal.style';
 
 export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+    componentDidMount() {
+        window.addEventListener('keydown', this.onCloseModalByEsc);
+      }
+      componentWillUnmount() {
+        window.removeEventListener('keydown', this.onCloseModalByEsc);
+      }
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
+      onCloseModalByEsc = (e) => {
+        if(e.code === 'Escape'){
+            this.props.closeModal()
+        }
+      }
 
-  handleKeyDown = event => {
-    if (event.code === 'Escape') {
-      this.props.onClose();
+    closeModal = (e)=>{
+        this.props.closeModal()
     }
-  };
-
-  handleBackdropClick = event => {
-    if (event.target === event.currentTarget) {
-      this.props.onClose();
-    }
-  };
 
   render() {
-    return createPortal(
-      <Overlay onClick={this.handleBackdropClick}>
-        <Modalka>
-          <img src={this.props.largeImageURL} alt={this.props.tags} />
-        </Modalka>
-      </Overlay>,
-      modalRoot
+    return (
+        <Overlay onClick={this.closeModal}>
+        <Modals>
+          <img src={this.props.src} alt="ads" width='600'/>
+        </Modals>
+      </Overlay>
     );
   }
 }
+
+Modal.propTypes = {
+  src: PropTypes.string.isRequired,
+};
